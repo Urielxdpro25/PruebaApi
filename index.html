@@ -295,6 +295,7 @@
             <option value="personajes">Personajes</option>
             <option value="sagas">Sagas</option>
             <option value="frutas">Frutas del Diablo</option>
+            <option value="tripulaciones">Tripulaciones</option>
           </select>
         </div>
 
@@ -308,6 +309,7 @@
     <div id="card-personajes" class="card-container"></div>
     <div id="card-frutas" class="card-container" hidden></div>
     <div id="card-sagas" class="card-container" hidden></div>
+    <div id="card-tripulaciones" class="card-container" hidden></div>
   </div>
 
   <footer class="site-footer">
@@ -329,7 +331,8 @@
     const API_URLS = {
       personajes: 'https://api.api-onepiece.com/v2/characters/en',
       frutas: 'https://api.api-onepiece.com/v2/fruits/en',
-      sagas: 'https://api.api-onepiece.com/v2/sagas/en'
+      sagas: 'https://api.api-onepiece.com/v2/sagas/en',
+      tripulaciones: 'https://api.api-onepiece.com/v2/crews/en'
     };
 
     const form = document.querySelector('.buscador-onepiece');
@@ -338,7 +341,8 @@
     const contenedores = {
       personajes: document.getElementById('card-personajes'),
       frutas: document.getElementById('card-frutas'),
-      sagas: document.getElementById('card-sagas')
+      sagas: document.getElementById('card-sagas'),
+      tripulaciones: document.getElementById('card-tripulaciones')
     };
     const datosPorCategoria = {};
 
@@ -385,7 +389,7 @@
         if (item.description) {
           agregarDato(tarjeta, 'Descripción', item.description);
         }
-      } else {
+      } else if (categoria === 'sagas') {
         tarjeta.dataset.label = 'SAGA';
         titulo.textContent = item.title || 'Saga sin título';
         tarjeta.appendChild(titulo);
@@ -393,6 +397,21 @@
         agregarDato(tarjeta, 'Capítulos', item.saga_chapitre);
         agregarDato(tarjeta, 'Volúmenes', item.saga_volume);
         agregarDato(tarjeta, 'Episodios', item.saga_episode);
+      } else {
+        tarjeta.dataset.label = 'TRIPULACIÓN';
+        titulo.textContent = item.name || 'Tripulación sin nombre';
+        tarjeta.appendChild(titulo);
+        agregarDato(tarjeta, 'Nombre original', item.roman_name);
+        agregarDato(tarjeta, 'Estado', item.status);
+        agregarDato(tarjeta, 'Recompensa total', item.total_prime);
+        agregarDato(tarjeta, 'Miembros registrados', item.number);
+        agregarDato(tarjeta, 'Yonko', item.is_yonko ? 'Sí' : 'No');
+
+        const miembros = (datosPorCategoria.personajes || [])
+          .filter((personaje) => String(personaje.crew?.id) === String(item.id))
+          .map((personaje) => personaje.name)
+          .filter(Boolean);
+        agregarDato(tarjeta, `Adeptos (${miembros.length})`, miembros.join(', ') || 'No disponibles');
       }
 
       return tarjeta;
@@ -402,9 +421,17 @@
       const contenedor = contenedores[categoria];
       const termino = buscarInput.value.trim().toLocaleLowerCase();
       const items = (datosPorCategoria[categoria] || []).filter((item) => {
-        const texto = categoria === 'sagas'
-          ? `${item.title || ''} ${item.saga_number || ''}`
-          : `${item.name || ''} ${item.roman_name || ''}`;
+        let texto;
+        if (categoria === 'sagas') {
+          texto = `${item.title || ''} ${item.saga_number || ''}`;
+        } else if (categoria === 'tripulaciones') {
+          const miembros = (datosPorCategoria.personajes || [])
+            .filter((personaje) => String(personaje.crew?.id) === String(item.id))
+            .map((personaje) => personaje.name || '');
+          texto = `${item.name || ''} ${item.roman_name || ''} ${miembros.join(' ')}`;
+        } else {
+          texto = `${item.name || ''} ${item.roman_name || ''}`;
+        }
         return texto.toLocaleLowerCase().includes(termino);
       });
 
@@ -443,6 +470,20 @@
         const datos = await respuesta.json();
         if (!Array.isArray(datos)) {
           throw new Error('La respuesta de la API no tiene el formato esperado.');
+        }
+
+        if (categoria === 'tripulaciones' && !datosPorCategoria.personajes) {
+          const respuestaPersonajes = await fetch(API_URLS.personajes);
+          if (!respuestaPersonajes.ok) {
+            throw new Error(`La API de personajes respondió con estado ${respuestaPersonajes.status}`);
+          }
+
+          const personajes = await respuestaPersonajes.json();
+          if (!Array.isArray(personajes)) {
+            throw new Error('La respuesta de personajes no tiene el formato esperado.');
+          }
+
+          datosPorCategoria.personajes = personajes;
         }
 
         datosPorCategoria[categoria] = datos;
