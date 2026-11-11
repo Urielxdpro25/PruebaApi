@@ -4,6 +4,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" type="image/png" href="logoApi.jpeg">
+
   <title>Prueba apis</title>
 
 
@@ -323,147 +325,147 @@
     <div class="footer-watermark">ONE PIECE</div>
   </footer>
 
-    <script>
-      const API_URLS = {
-        personajes: 'https://api.api-onepiece.com/v2/characters/en',
-        frutas: 'https://api.api-onepiece.com/v2/fruits/en',
-        sagas: 'https://api.api-onepiece.com/v2/sagas/en'
-      };
+  <script>
+    const API_URLS = {
+      personajes: 'https://api.api-onepiece.com/v2/characters/en',
+      frutas: 'https://api.api-onepiece.com/v2/fruits/en',
+      sagas: 'https://api.api-onepiece.com/v2/sagas/en'
+    };
 
-      const form = document.querySelector('.buscador-onepiece');
-      const categoriaSelect = document.getElementById('categoria-select');
-      const buscarInput = document.getElementById('buscar-input');
-      const contenedores = {
-        personajes: document.getElementById('card-personajes'),
-        frutas: document.getElementById('card-frutas'),
-        sagas: document.getElementById('card-sagas')
-      };
-      const datosPorCategoria = {};
+    const form = document.querySelector('.buscador-onepiece');
+    const categoriaSelect = document.getElementById('categoria-select');
+    const buscarInput = document.getElementById('buscar-input');
+    const contenedores = {
+      personajes: document.getElementById('card-personajes'),
+      frutas: document.getElementById('card-frutas'),
+      sagas: document.getElementById('card-sagas')
+    };
+    const datosPorCategoria = {};
 
-      function agregarDato(tarjeta, etiqueta, valor) {
-        const dato = document.createElement('p');
-        dato.textContent = `${etiqueta}: ${valor ?? 'No disponible'}`;
-        tarjeta.appendChild(dato);
-      }
+    function agregarDato(tarjeta, etiqueta, valor) {
+      const dato = document.createElement('p');
+      dato.textContent = `${etiqueta}: ${valor ?? 'No disponible'}`;
+      tarjeta.appendChild(dato);
+    }
 
-      function crearTarjeta(categoria, item) {
-        const tarjeta = document.createElement('article');
-        tarjeta.className = 'character-card';
+    function crearTarjeta(categoria, item) {
+      const tarjeta = document.createElement('article');
+      tarjeta.className = 'character-card';
 
-        const titulo = document.createElement('h3');
+      const titulo = document.createElement('h3');
 
-        if (categoria === 'personajes') {
-          tarjeta.dataset.label = 'SE BUSCA';
-          titulo.textContent = item.name || 'Sin nombre';
-          tarjeta.appendChild(titulo);
-          agregarDato(tarjeta, 'Recompensa', item.bounty);
-          agregarDato(tarjeta, 'Edad', item.age);
-          agregarDato(tarjeta, 'Tamaño', item.size);
-          agregarDato(tarjeta, 'Tripulación', item.crew?.name);
-          agregarDato(tarjeta, 'Fruta', item.fruit?.name);
-          agregarDato(tarjeta, 'Cargo', item.job);
-          agregarDato(tarjeta, 'Estado', item.status);
-        } else if (categoria === 'frutas') {
-          tarjeta.dataset.label = 'FRUTA DEL DIABLO';
-          titulo.textContent = item.name || 'Fruta sin nombre';
+      if (categoria === 'personajes') {
+        tarjeta.dataset.label = 'SE BUSCA';
+        titulo.textContent = item.name || 'Sin nombre';
+        tarjeta.appendChild(titulo);
+        agregarDato(tarjeta, 'Recompensa', item.bounty);
+        agregarDato(tarjeta, 'Edad', item.age);
+        agregarDato(tarjeta, 'Tamaño', item.size);
+        agregarDato(tarjeta, 'Tripulación', item.crew?.name);
+        agregarDato(tarjeta, 'Fruta', item.fruit?.name);
+        agregarDato(tarjeta, 'Cargo', item.job);
+        agregarDato(tarjeta, 'Estado', item.status);
+      } else if (categoria === 'frutas') {
+        tarjeta.dataset.label = 'FRUTA DEL DIABLO';
+        titulo.textContent = item.name || 'Fruta sin nombre';
 
-          if (item.filename) {
-            const imagen = document.createElement('img');
-            imagen.src = item.filename;
-            imagen.alt = item.name ? `Imagen de ${item.name}` : 'Imagen de fruta';
-            imagen.loading = 'lazy';
-            imagen.addEventListener('error', () => imagen.remove());
-            tarjeta.appendChild(imagen);
-          }
-
-          tarjeta.appendChild(titulo);
-          agregarDato(tarjeta, 'Nombre original', item.roman_name);
-          agregarDato(tarjeta, 'Tipo', item.type);
-
-          if (item.description) {
-            agregarDato(tarjeta, 'Descripción', item.description);
-          }
-        } else {
-          tarjeta.dataset.label = 'SAGA';
-          titulo.textContent = item.title || 'Saga sin título';
-          tarjeta.appendChild(titulo);
-          agregarDato(tarjeta, 'Número', item.saga_number);
-          agregarDato(tarjeta, 'Capítulos', item.saga_chapitre);
-          agregarDato(tarjeta, 'Volúmenes', item.saga_volume);
-          agregarDato(tarjeta, 'Episodios', item.saga_episode);
+        if (item.filename) {
+          const imagen = document.createElement('img');
+          imagen.src = item.filename;
+          imagen.alt = item.name ? `Imagen de ${item.name}` : 'Imagen de fruta';
+          imagen.loading = 'lazy';
+          imagen.addEventListener('error', () => imagen.remove());
+          tarjeta.appendChild(imagen);
         }
 
-        return tarjeta;
+        tarjeta.appendChild(titulo);
+        agregarDato(tarjeta, 'Nombre original', item.roman_name);
+        agregarDato(tarjeta, 'Tipo', item.type);
+
+        if (item.description) {
+          agregarDato(tarjeta, 'Descripción', item.description);
+        }
+      } else {
+        tarjeta.dataset.label = 'SAGA';
+        titulo.textContent = item.title || 'Saga sin título';
+        tarjeta.appendChild(titulo);
+        agregarDato(tarjeta, 'Número', item.saga_number);
+        agregarDato(tarjeta, 'Capítulos', item.saga_chapitre);
+        agregarDato(tarjeta, 'Volúmenes', item.saga_volume);
+        agregarDato(tarjeta, 'Episodios', item.saga_episode);
       }
 
-      function mostrarItems(categoria) {
-        const contenedor = contenedores[categoria];
-        const termino = buscarInput.value.trim().toLocaleLowerCase();
-        const items = (datosPorCategoria[categoria] || []).filter((item) => {
-          const texto = categoria === 'sagas'
-            ? `${item.title || ''} ${item.saga_number || ''}`
-            : `${item.name || ''} ${item.roman_name || ''}`;
-          return texto.toLocaleLowerCase().includes(termino);
-        });
+      return tarjeta;
+    }
 
-        contenedor.replaceChildren();
+    function mostrarItems(categoria) {
+      const contenedor = contenedores[categoria];
+      const termino = buscarInput.value.trim().toLocaleLowerCase();
+      const items = (datosPorCategoria[categoria] || []).filter((item) => {
+        const texto = categoria === 'sagas'
+          ? `${item.title || ''} ${item.saga_number || ''}`
+          : `${item.name || ''} ${item.roman_name || ''}`;
+        return texto.toLocaleLowerCase().includes(termino);
+      });
 
-        if (items.length === 0) {
-          contenedor.textContent = 'No se encontraron resultados.';
-          return;
+      contenedor.replaceChildren();
+
+      if (items.length === 0) {
+        contenedor.textContent = 'No se encontraron resultados.';
+        return;
+      }
+
+      items.forEach((item) => {
+        contenedor.appendChild(crearTarjeta(categoria, item));
+      });
+    }
+
+    async function cargarCategoria(categoria) {
+      const contenedor = contenedores[categoria];
+
+      Object.entries(contenedores).forEach(([nombre, elemento]) => {
+        elemento.hidden = nombre !== categoria;
+      });
+
+      if (datosPorCategoria[categoria]) {
+        mostrarItems(categoria);
+        return;
+      }
+
+      contenedor.textContent = 'Cargando...';
+
+      try {
+        const respuesta = await fetch(API_URLS[categoria]);
+        if (!respuesta.ok) {
+          throw new Error(`La API respondió con estado ${respuesta.status}`);
         }
 
-        items.forEach((item) => {
-          contenedor.appendChild(crearTarjeta(categoria, item));
-        });
-      }
+        const datos = await respuesta.json();
+        if (!Array.isArray(datos)) {
+          throw new Error('La respuesta de la API no tiene el formato esperado.');
+        }
 
-      async function cargarCategoria(categoria) {
-        const contenedor = contenedores[categoria];
-
-        Object.entries(contenedores).forEach(([nombre, elemento]) => {
-          elemento.hidden = nombre !== categoria;
-        });
-
-        if (datosPorCategoria[categoria]) {
+        datosPorCategoria[categoria] = datos;
+        if (categoriaSelect.value === categoria) {
           mostrarItems(categoria);
-          return;
         }
-
-        contenedor.textContent = 'Cargando...';
-
-        try {
-          const respuesta = await fetch(API_URLS[categoria]);
-          if (!respuesta.ok) {
-            throw new Error(`La API respondió con estado ${respuesta.status}`);
-          }
-
-          const datos = await respuesta.json();
-          if (!Array.isArray(datos)) {
-            throw new Error('La respuesta de la API no tiene el formato esperado.');
-          }
-
-          datosPorCategoria[categoria] = datos;
-          if (categoriaSelect.value === categoria) {
-            mostrarItems(categoria);
-          }
-        } catch (error) {
-          console.error(`Error al cargar ${categoria}:`, error);
-          contenedor.textContent = 'No se pudieron cargar los datos. Intenta nuevamente.';
-        }
+      } catch (error) {
+        console.error(`Error al cargar ${categoria}:`, error);
+        contenedor.textContent = 'No se pudieron cargar los datos. Intenta nuevamente.';
       }
+    }
 
-      form.addEventListener('submit', (event) => {
-        event.preventDefault();
-        mostrarItems(categoriaSelect.value);
-      });
+    form.addEventListener('submit', (event) => {
+      event.preventDefault();
+      mostrarItems(categoriaSelect.value);
+    });
 
-      categoriaSelect.addEventListener('change', () => {
-        cargarCategoria(categoriaSelect.value);
-      });
-
+    categoriaSelect.addEventListener('change', () => {
       cargarCategoria(categoriaSelect.value);
-    </script>
+    });
+
+    cargarCategoria(categoriaSelect.value);
+  </script>
 
 </body>
 
